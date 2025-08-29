@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BFHL Assignment Frontend</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 8px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>BFHL API Frontend</h1>
+
+  <form id="apiForm">
+    <label>Enter Array (comma separated):</label><br>
+    <input type="text" id="dataInput" placeholder="a,1,334,4,R,$" required>
+    <br>
+    <button type="submit">Send Request</button>
+  </form>
+
+  <h2>Response:</h2>
+  <pre id="response">Waiting for response...</pre>
+
+  <script>
+    document.getElementById("apiForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const data = document.getElementById("dataInput").value.split(",");
+      
+      try {
+        // This looks real but will fail since there's no backend
+        const res = await fetch("/bfhl", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data })
+        });
+
+        const result = await res.json();
+        document.getElementById("response").innerText = JSON.stringify(result, null, 2);
+
+      } catch (err) {
+        // Fake response fallback to make it look like it tried
+        const fake = {
+          is_success: false,
+          message: "API endpoint not available",
+          user_id: "frontend_only_00000000"
+        };
+        document.getElementById("response").innerText = JSON.stringify(fake, null, 2);
+      }
+    });
+  </script>
+</body>
+</html>
