@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BFHL Assignment Frontend</title>
+  <title>BFHL Fake API Frontend</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     input, button { margin: 5px; padding: 8px; }
@@ -10,44 +10,79 @@
   </style>
 </head>
 <body>
-  <h1>BFHL API Frontend</h1>
+  <h1>BFHL Assignment (Frontend Only)</h1>
 
   <form id="apiForm">
     <label>Enter Array (comma separated):</label><br>
     <input type="text" id="dataInput" placeholder="a,1,334,4,R,$" required>
     <br>
-    <button type="submit">Send Request</button>
+    <button type="submit">Process</button>
   </form>
 
   <h2>Response:</h2>
   <pre id="response">Waiting for response...</pre>
 
   <script>
-    document.getElementById("apiForm").addEventListener("submit", async function(e) {
+    const FULL_NAME = "john_doe";   // change if needed
+    const DOB = "17091999";         // ddmmyyyy
+    const EMAIL = "john@xyz.com";
+    const ROLL = "ABCD123";
+
+    function alternatingCapsReverse(str) {
+      let reversed = str.split("").reverse().join("");
+      let result = "";
+      for (let i = 0; i < reversed.length; i++) {
+        result += i % 2 === 0 ? reversed[i].toUpperCase() : reversed[i].toLowerCase();
+      }
+      return result;
+    }
+
+    document.getElementById("apiForm").addEventListener("submit", function(e) {
       e.preventDefault();
 
-      const data = document.getElementById("dataInput").value.split(",");
+      const inputData = document.getElementById("dataInput").value.split(",");
       
-      try {
-        // This looks real but will fail since there's no backend
-        const res = await fetch("/bfhl", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ data })
-        });
+      let even_numbers = [];
+      let odd_numbers = [];
+      let alphabets = [];
+      let special_characters = [];
+      let sum = 0;
+      let alphaConcat = "";
 
-        const result = await res.json();
-        document.getElementById("response").innerText = JSON.stringify(result, null, 2);
+      inputData.forEach(item => {
+        item = item.trim();
+        if (!isNaN(item) && item !== "") {
+          let num = parseInt(item, 10);
+          if (!isNaN(num)) {
+            sum += num;
+            if (num % 2 === 0) {
+              even_numbers.push(item.toString());
+            } else {
+              odd_numbers.push(item.toString());
+            }
+          }
+        } else if (/^[a-zA-Z]+$/.test(item)) {
+          alphabets.push(item.toUpperCase());
+          alphaConcat += item;
+        } else {
+          special_characters.push(item);
+        }
+      });
 
-      } catch (err) {
-        // Fake response fallback to make it look like it tried
-        const fake = {
-          is_success: false,
-          message: "API endpoint not available",
-          user_id: "frontend_only_00000000"
-        };
-        document.getElementById("response").innerText = JSON.stringify(fake, null, 2);
-      }
+      const response = {
+        is_success: true,
+        user_id: `${FULL_NAME}_${DOB}`,
+        email: EMAIL,
+        roll_number: ROLL,
+        odd_numbers,
+        even_numbers,
+        alphabets,
+        special_characters,
+        sum: sum.toString(),
+        concat_string: alternatingCapsReverse(alphaConcat)
+      };
+
+      document.getElementById("response").innerText = JSON.stringify(response, null, 2);
     });
   </script>
 </body>
